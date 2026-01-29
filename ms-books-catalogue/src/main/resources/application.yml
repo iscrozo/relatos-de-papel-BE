@@ -1,21 +1,16 @@
 server:
-  port: 8081
+  port: 0   # puerto dinámico
 
 spring:
   application:
     name: ms-books-catalogue
-  
+
   datasource:
-    url: jdbc:h2:mem:cataloguedb
+    url: jdbc:h2:mem:booksdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,30 +18,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
-
-logging:
-  level:
-    com.relatosdepapel.catalogue: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      defaultZone: http://localhost:8761/eureka
