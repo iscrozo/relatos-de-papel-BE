@@ -37,7 +37,7 @@ public class BookController {
         return service.findById(id);
     }
 
-    // Busacar libros con filtros
+    // Buscar libros con filtros
     @GetMapping("/search")
     public List<BookDTO> search(
             @RequestParam(required = false) String title,
