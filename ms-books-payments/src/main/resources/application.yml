@@ -6,7 +6,7 @@ spring:
     name: ms-books-payments
   
   datasource:
-    url: jdbc:mysql://195.35.61.36:3306/u301187585_relatos_papel?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://195.35.61.36:3306/u301187585_relatos_papel?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: u301187585_relatos_admin
     password: v$Z2!#Xi+v
