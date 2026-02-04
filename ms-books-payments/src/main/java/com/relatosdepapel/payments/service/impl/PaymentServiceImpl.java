@@ -7,6 +7,7 @@ import com.relatosdepapel.payments.service.PaymentService;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,23 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDTO create(PaymentDTO paymentDTO) {
         Payment payment = mapToEntity(paymentDTO);
-        if (payment.getPaymentDate() == null) {
-            payment.setPaymentDate(LocalDateTime.now());
-        }
         if (payment.getStatus() == null) {
             payment.setStatus("PENDING");
+        }
+        if (payment.getQuantity() == null) {
+            payment.setQuantity(1);
+        }
+        if (payment.getTotalAmount() == null && payment.getUnitPrice() != null) {
+            payment.setTotalAmount(payment.getUnitPrice().multiply(java.math.BigDecimal.valueOf(payment.getQuantity())));
+        }
+        if (payment.getAmount() == null && payment.getTotalAmount() != null) {
+            payment.setAmount(payment.getTotalAmount());
+        }
+        if (payment.getTransactionId() == null || payment.getTransactionId().isBlank()) {
+            payment.setTransactionId("TXN-" + System.currentTimeMillis());
+        }
+        if (payment.getPaymentDate() == null) {
+            payment.setPaymentDate(LocalDateTime.now());
         }
         Payment saved = repository.save(payment);
         return mapToDTO(saved);
@@ -42,10 +55,16 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new RuntimeException(PAYMENT_NOT_FOUND));
 
         existing.setBookId(paymentDTO.getBookId());
-        existing.setAmount(paymentDTO.getAmount());
+        existing.setBookTitle(paymentDTO.getBookTitle());
+        existing.setQuantity(paymentDTO.getQuantity());
+        existing.setUnitPrice(paymentDTO.getUnitPrice());
+        existing.setTotalAmount(paymentDTO.getTotalAmount());
+        existing.setCustomerName(paymentDTO.getCustomerName());
+        existing.setCustomerEmail(paymentDTO.getCustomerEmail());
         existing.setStatus(paymentDTO.getStatus());
         existing.setPaymentMethod(paymentDTO.getPaymentMethod());
-        existing.setPaymentDate(paymentDTO.getPaymentDate());
+        existing.setPaymentDate(paymentDTO.getPaymentDate() != null ? paymentDTO.getPaymentDate() : LocalDateTime.now());
+        existing.setNotes(paymentDTO.getNotes());
 
         return mapToDTO(repository.save(existing));
     }
@@ -58,14 +77,17 @@ public class PaymentServiceImpl implements PaymentService {
         fields.forEach((key, value) -> {
             switch (key) {
                 case "bookId" -> existing.setBookId(((Number) value).longValue());
-                case "amount" -> existing.setAmount(new java.math.BigDecimal(value.toString()));
+                case "bookTitle" -> existing.setBookTitle((String) value);
+                case "quantity" -> existing.setQuantity((Integer) value);
+                case "unitPrice" -> existing.setUnitPrice(new java.math.BigDecimal(value.toString()));
+                case "totalAmount" -> existing.setTotalAmount(new java.math.BigDecimal(value.toString()));
+                case "customerName" -> existing.setCustomerName((String) value);
+                case "customerEmail" -> existing.setCustomerEmail((String) value);
                 case "status" -> existing.setStatus((String) value);
                 case "paymentMethod" -> existing.setPaymentMethod((String) value);
-                case "paymentDate" -> 
-                        existing.setPaymentDate(LocalDateTime.parse(value.toString()));
-                default -> {
-                    // campo desconocido
-                }
+                case "paymentDate" -> existing.setPaymentDate(LocalDateTime.parse(value.toString()));
+                case "notes" -> existing.setNotes((String) value);
+                default -> { /* campo desconocido */ }
             }
         });
 
@@ -120,20 +142,36 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentDTO dto = new PaymentDTO();
         dto.setId(payment.getId());
         dto.setBookId(payment.getBookId());
-        dto.setAmount(payment.getAmount());
+        dto.setBookTitle(payment.getBookTitle());
+        dto.setQuantity(payment.getQuantity());
+        dto.setUnitPrice(payment.getUnitPrice());
+        dto.setTotalAmount(payment.getTotalAmount());
+        dto.setCustomerName(payment.getCustomerName());
+        dto.setCustomerEmail(payment.getCustomerEmail());
         dto.setStatus(payment.getStatus());
         dto.setPaymentMethod(payment.getPaymentMethod());
+        dto.setTransactionId(payment.getTransactionId());
         dto.setPaymentDate(payment.getPaymentDate());
+        dto.setNotes(payment.getNotes());
         return dto;
     }
 
     private Payment mapToEntity(PaymentDTO dto) {
         Payment payment = new Payment();
         payment.setBookId(dto.getBookId());
-        payment.setAmount(dto.getAmount());
+        payment.setBookTitle(dto.getBookTitle() != null ? dto.getBookTitle() : "Libro #" + dto.getBookId());
+        payment.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : 1);
+        BigDecimal price = dto.getUnitPrice() != null ? dto.getUnitPrice() : dto.getAmount();
+        BigDecimal total = dto.getTotalAmount() != null ? dto.getTotalAmount() : (dto.getAmount() != null ? dto.getAmount() : BigDecimal.ZERO);
+        payment.setUnitPrice(price != null ? price : BigDecimal.ZERO);
+        payment.setTotalAmount(total);
+        payment.setCustomerName(dto.getCustomerName() != null ? dto.getCustomerName() : "Cliente");
+        payment.setCustomerEmail(dto.getCustomerEmail() != null ? dto.getCustomerEmail() : "cliente@email.com");
         payment.setStatus(dto.getStatus());
         payment.setPaymentMethod(dto.getPaymentMethod());
+        payment.setTransactionId(dto.getTransactionId());
         payment.setPaymentDate(dto.getPaymentDate());
+        payment.setNotes(dto.getNotes());
         return payment;
     }
 }

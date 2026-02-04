@@ -1,0 +1,536 @@
+{
+  "info": {
+    "name": "Relatos de Papel - API",
+    "description": "Colección para probar el sistema de microservicios Relatos de Papel a través del Cloud Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "bookId",
+      "value": "1"
+    },
+    {
+      "key": "paymentId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Info",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/actuator/health",
+            "description": "Verificar estado del Gateway"
+          }
+        },
+        {
+          "name": "Gateway Routes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/actuator/gateway/routes",
+            "description": "Ver rutas configuradas en el Gateway"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Books - API Directa",
+      "item": [
+        {
+          "name": "Listar todos los libros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/books",
+            "description": "GET - Obtener todos los libros visibles"
+          }
+        },
+        {
+          "name": "Obtener libro por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "GET - Obtener un libro por su ID"
+          }
+        },
+        {
+          "name": "Buscar libros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/search?title=&author=&category=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "books",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": ""
+                },
+                {
+                  "key": "author",
+                  "value": ""
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                },
+                {
+                  "key": "rating",
+                  "value": ""
+                },
+                {
+                  "key": "visible",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "GET - Buscar libros con filtros opcionales"
+          }
+        },
+        {
+          "name": "Crear libro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cien años de soledad\",\n  \"author\": \"Gabriel García Márquez\",\n  \"isbn\": \"978-3-16-148410-0\",\n  \"price\": 29.99,\n  \"stock\": 50,\n  \"category\": \"Ficción\",\n  \"publicationDate\": \"1967-05-30\",\n  \"rating\": 5,\n  \"visible\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/books",
+            "description": "POST - Crear un nuevo libro"
+          }
+        },
+        {
+          "name": "Actualizar libro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cien años de soledad (actualizado)\",\n  \"author\": \"Gabriel García Márquez\",\n  \"isbn\": \"978-3-16-148410-0\",\n  \"price\": 29.99,\n  \"stock\": 50,\n  \"category\": \"Ficción\",\n  \"publicationDate\": \"1967-05-30\",\n  \"rating\": 5,\n  \"visible\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "PUT - Actualizar un libro existente"
+          }
+        },
+        {
+          "name": "Actualizar libro parcialmente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Nuevo título\",\n  \"rating\": 4\n}"
+            },
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "PATCH - Actualización parcial de campos"
+          }
+        },
+        {
+          "name": "Eliminar libro",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/books/{{bookId}}",
+            "description": "DELETE - Eliminar un libro"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Books - Proxy Inverso",
+      "item": [
+        {
+          "name": "Proxy Inverso - GET Listar libros",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/books\"\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "GET /api/books"
+          }
+        },
+        {
+          "name": "Proxy Inverso - GET Libro por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/books/{{bookId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "GET /api/books/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - GET Buscar libros",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/books/search?title=&author=&category=\"\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "GET /api/books/search con query params opcionales"
+          }
+        },
+        {
+          "name": "Proxy Inverso - POST Crear libro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/books\",\n  \"body\": {\n    \"title\": \"Don Quijote\",\n    \"author\": \"Miguel de Cervantes\",\n    \"isbn\": \"978-84-376-0494-7\",\n    \"price\": 35.50,\n    \"stock\": 30,\n    \"category\": \"Clásico\",\n    \"publicationDate\": \"1605-01-01\",\n    \"rating\": 5,\n    \"visible\": true\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "POST /api/books"
+          }
+        },
+        {
+          "name": "Proxy Inverso - PUT Actualizar libro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"PUT\",\n  \"path\": \"/api/books/{{bookId}}\",\n  \"body\": {\n    \"title\": \"Don Quijote (actualizado)\",\n    \"author\": \"Miguel de Cervantes\",\n    \"isbn\": \"978-84-376-0494-7\",\n    \"price\": 35.50,\n    \"stock\": 30,\n    \"category\": \"Clásico\",\n    \"publicationDate\": \"1605-01-01\",\n    \"rating\": 5,\n    \"visible\": true\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "PUT /api/books/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - PATCH Actualizar libro parcialmente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"PATCH\",\n  \"path\": \"/api/books/{{bookId}}\",\n  \"body\": {\n    \"title\": \"Nuevo título\",\n    \"rating\": 4\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "PATCH /api/books/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - DELETE Libro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"DELETE\",\n  \"path\": \"/api/books/{{bookId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/books/action",
+            "description": "DELETE /api/books/{id}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments - API Directa",
+      "item": [
+        {
+          "name": "Listar todos los pagos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/payments",
+            "description": "GET - Obtener todos los pagos"
+          }
+        },
+        {
+          "name": "Obtener pago por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/payments/{{paymentId}}",
+            "description": "GET - Obtener un pago por su ID"
+          }
+        },
+        {
+          "name": "Buscar pagos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/search?bookId=&status=&paymentMethod=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "bookId",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "paymentMethod",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "GET - Buscar pagos con filtros"
+          }
+        },
+        {
+          "name": "Crear pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": 1,\n  \"bookTitle\": \"Cien años de soledad\",\n  \"quantity\": 1,\n  \"unitPrice\": 29.99,\n  \"totalAmount\": 29.99,\n  \"customerName\": \"Juan Pérez\",\n  \"customerEmail\": \"juan@email.com\",\n  \"status\": \"COMPLETED\",\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments",
+            "description": "POST - Crear un nuevo pago (usa un bookId existente)"
+          }
+        },
+        {
+          "name": "Actualizar pago",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": 1,\n  \"bookTitle\": \"Cien años de soledad\",\n  \"quantity\": 1,\n  \"unitPrice\": 24.99,\n  \"totalAmount\": 24.99,\n  \"customerName\": \"Juan Pérez\",\n  \"customerEmail\": \"juan@email.com\",\n  \"status\": \"COMPLETED\",\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/{{paymentId}}",
+            "description": "PUT - Actualizar un pago"
+          }
+        },
+        {
+          "name": "Eliminar pago",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/payments/{{paymentId}}",
+            "description": "DELETE - Eliminar un pago"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments - Proxy Inverso",
+      "item": [
+        {
+          "name": "Proxy Inverso - GET Listar pagos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/payments\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "GET /api/payments"
+          }
+        },
+        {
+          "name": "Proxy Inverso - GET Pago por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/payments/{{paymentId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "GET /api/payments/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - GET Buscar pagos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/payments/search?bookId=&status=&paymentMethod=\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "GET /api/payments/search con query params opcionales"
+          }
+        },
+        {
+          "name": "Proxy Inverso - POST Crear pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/payments\",\n  \"body\": {\n    \"bookId\": 1,\n    \"amount\": 19.99,\n    \"status\": \"COMPLETED\",\n    \"paymentMethod\": \"CREDIT_CARD\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "POST /api/payments"
+          }
+        },
+        {
+          "name": "Proxy Inverso - PUT Actualizar pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"PUT\",\n  \"path\": \"/api/payments/{{paymentId}}\",\n  \"body\": {\n    \"bookId\": 1,\n    \"bookTitle\": \"Cien años de soledad\",\n    \"quantity\": 1,\n    \"unitPrice\": 24.99,\n    \"totalAmount\": 24.99,\n    \"customerName\": \"Juan Pérez\",\n    \"customerEmail\": \"juan@email.com\",\n    \"status\": \"COMPLETED\",\n    \"paymentMethod\": \"CREDIT_CARD\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "PUT /api/payments/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - PATCH Actualizar pago parcialmente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"PATCH\",\n  \"path\": \"/api/payments/{{paymentId}}\",\n  \"body\": {\n    \"status\": \"CANCELLED\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "PATCH /api/payments/{id}"
+          }
+        },
+        {
+          "name": "Proxy Inverso - DELETE Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"DELETE\",\n  \"path\": \"/api/payments/{{paymentId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/action",
+            "description": "DELETE /api/payments/{id}"
+          }
+        }
+      ]
+    }
+  ]
+}

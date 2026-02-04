@@ -44,6 +44,8 @@ public class BookServiceImpl implements BookService {
         existing.setTitle(bookDTO.getTitle());
         existing.setAuthor(bookDTO.getAuthor());
         existing.setIsbn(bookDTO.getIsbn());
+        existing.setPrice(bookDTO.getPrice());
+        existing.setStock(bookDTO.getStock());
         existing.setCategory(bookDTO.getCategory());
         existing.setPublicationDate(bookDTO.getPublicationDate());
         existing.setRating(bookDTO.getRating());
@@ -65,6 +67,8 @@ public class BookServiceImpl implements BookService {
                 case "title" -> existing.setTitle((String) value);
                 case "author" -> existing.setAuthor((String) value);
                 case "isbn" -> existing.setIsbn((String) value);
+                case "price" -> existing.setPrice(new java.math.BigDecimal(value.toString()));
+                case "stock" -> existing.setStock((Integer) value);
                 case "category" -> existing.setCategory((String) value);
                 case "publicationDate" ->
                         existing.setPublicationDate(java.time.LocalDate.parse(value.toString()));
@@ -168,6 +172,8 @@ public class BookServiceImpl implements BookService {
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
+        dto.setPrice(book.getPrice());
+        dto.setStock(book.getStock());
         dto.setCategory(book.getCategory());
         dto.setPublicationDate(book.getPublicationDate());
         dto.setRating(book.getRating());
@@ -180,6 +186,8 @@ public class BookServiceImpl implements BookService {
         book.setTitle(dto.getTitle());
         book.setAuthor(dto.getAuthor());
         book.setIsbn(dto.getIsbn());
+        book.setPrice(dto.getPrice() != null ? dto.getPrice() : java.math.BigDecimal.ZERO);
+        book.setStock(dto.getStock() != null ? dto.getStock() : 0);
         book.setCategory(dto.getCategory());
         book.setPublicationDate(dto.getPublicationDate());
         book.setRating(dto.getRating());
