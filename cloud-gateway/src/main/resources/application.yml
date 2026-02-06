@@ -11,7 +11,8 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        # Route for Books Catalogue microservice
+        # Ruta para el microservicio de Books Catalogue
+        # Proxy Inverso: POST /api/books/action with {"method":"GET","path":"/api/books/123"}
         - id: ms-books-catalogue
           uri: lb://ms-books-catalogue
           predicates:
@@ -19,7 +20,8 @@ spring:
           filters:
             - StripPrefix=0
         
-        # Route for Payments microservice
+        # Ruta para el microservicio de Payments
+        # Proxy Inverso: POST /api/payments/action with {"method":"POST","path":"/api/payments","body":{...}}
         - id: ms-books-payments
           uri: lb://ms-books-payments
           predicates:
