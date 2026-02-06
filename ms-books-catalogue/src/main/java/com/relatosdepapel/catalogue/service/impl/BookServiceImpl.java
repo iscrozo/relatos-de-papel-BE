@@ -7,6 +7,8 @@ import com.relatosdepapel.catalogue.service.BookService;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.criteria.Predicate;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,10 @@ public class BookServiceImpl implements BookService {
         existing.setTitle(bookDTO.getTitle());
         existing.setAuthor(bookDTO.getAuthor());
         existing.setIsbn(bookDTO.getIsbn());
+        existing.setPrice(bookDTO.getPrice());
+        existing.setStock(bookDTO.getStock());
         existing.setCategory(bookDTO.getCategory());
-        existing.setPublicationDate(bookDTO.getPublicationDate());
+        existing.setPublicationYear(bookDTO.getPublicationDate() != null ? bookDTO.getPublicationDate().getYear() : null);
         existing.setRating(bookDTO.getRating());
         existing.setVisible(bookDTO.getVisible());
 
@@ -65,14 +69,14 @@ public class BookServiceImpl implements BookService {
                 case "title" -> existing.setTitle((String) value);
                 case "author" -> existing.setAuthor((String) value);
                 case "isbn" -> existing.setIsbn((String) value);
+                case "price" -> existing.setPrice(new java.math.BigDecimal(value.toString()));
+                case "stock" -> existing.setStock((Integer) value);
                 case "category" -> existing.setCategory((String) value);
-                case "publicationDate" ->
-                        existing.setPublicationDate(java.time.LocalDate.parse(value.toString()));
-                case "rating" -> existing.setRating((Integer) value);
-                case "visible" -> existing.setVisible((Boolean) value);
-                default -> {
-                    // campo desconocido
-                }
+                case "publicationDate" -> existing.setPublicationYear(LocalDate.parse(value.toString()).getYear());
+                case "publicationYear" -> existing.setPublicationYear(value instanceof Number n ? n.intValue() : Integer.parseInt(value.toString()));
+                case "rating" -> existing.setRating(value instanceof Number n ? n.intValue() : Integer.parseInt(value.toString()));
+                case "visible" -> existing.setVisible(Boolean.parseBoolean(value.toString()));
+                default -> { /* campo desconocido */ }
             }
         });
 
@@ -102,8 +106,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDTO> findAllVisible() {
-        return repository.findAll()
-                .stream()
+        return repository.findAll().stream()
                 .filter(book -> Boolean.TRUE.equals(book.getVisible()))
                 .map(this::mapToDTO)
                 .toList();
@@ -145,11 +148,9 @@ public class BookServiceImpl implements BookService {
             if (category != null) {
                 predicates.add(cb.equal(root.get("category"), category));
             }
-
             if (rating != null) {
                 predicates.add(cb.equal(root.get("rating"), rating));
             }
-
             if (visible != null) {
                 predicates.add(cb.equal(root.get("visible"), visible));
             }
@@ -168,8 +169,10 @@ public class BookServiceImpl implements BookService {
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
+        dto.setPrice(book.getPrice());
+        dto.setStock(book.getStock());
         dto.setCategory(book.getCategory());
-        dto.setPublicationDate(book.getPublicationDate());
+        dto.setPublicationDate(book.getPublicationYear() != null ? LocalDate.of(book.getPublicationYear(), 1, 1) : null);
         dto.setRating(book.getRating());
         dto.setVisible(book.getVisible());
         return dto;
@@ -179,11 +182,13 @@ public class BookServiceImpl implements BookService {
         Book book = new Book();
         book.setTitle(dto.getTitle());
         book.setAuthor(dto.getAuthor());
-        book.setIsbn(dto.getIsbn());
+        book.setIsbn(dto.getIsbn() != null && !dto.getIsbn().isBlank() ? dto.getIsbn().trim() : null);
+        book.setPrice(dto.getPrice() != null ? dto.getPrice() : java.math.BigDecimal.ZERO);
+        book.setStock(dto.getStock() != null ? dto.getStock() : 0);
         book.setCategory(dto.getCategory());
-        book.setPublicationDate(dto.getPublicationDate());
+        book.setPublicationYear(dto.getPublicationDate() != null ? dto.getPublicationDate().getYear() : null);
         book.setRating(dto.getRating());
-        book.setVisible(dto.getVisible());
+        book.setVisible(dto.getVisible() != null ? dto.getVisible() : Boolean.TRUE);
         return book;
     }
 }

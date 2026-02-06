@@ -67,8 +67,12 @@ public class PaymentController {
 
     // Eliminar pago
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, String> delete(@PathVariable Long id) {
         service.delete(id);
+        return Map.of(
+            "message", "Payment deleted successfully",
+            "id", id.toString()
+        );
     }
 }

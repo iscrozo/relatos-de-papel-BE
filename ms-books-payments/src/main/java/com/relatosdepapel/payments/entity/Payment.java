@@ -12,20 +12,41 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "book_id", nullable = false)
     private Long bookId;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
+    private Integer quantity = 1;
+
+    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal unitPrice;
+
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+
+    /** Legacy column - maps to totalAmount for DB compatibility */
+    @Column(precision = 10, scale = 2)
     private BigDecimal amount;
+
+    @Column(name = "customer_name", nullable = false)
+    private String customerName;
+
+    @Column(name = "customer_email", nullable = false)
+    private String customerEmail;
 
     @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
 
-    @Column(nullable = false)
+    @Column(name = "transaction_id", unique = true)
+    private String transactionId;
+
+    @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
+
+    private String notes;
 
     public Payment() {
     }
@@ -46,12 +67,52 @@ public class Payment {
         this.bookId = bookId;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
     }
 
     public String getStatus() {
@@ -70,11 +131,27 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
     public LocalDateTime getPaymentDate() {
         return paymentDate;
     }
 
     public void setPaymentDate(LocalDateTime paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

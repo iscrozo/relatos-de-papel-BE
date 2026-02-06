@@ -1,7 +1,7 @@
 package com.relatosdepapel.catalogue.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "books")
@@ -20,15 +20,21 @@ public class Book {
     @Column(unique = true)
     private String isbn;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @Column(nullable = false)
+    private Integer stock = 0;
+
     private String category;
 
-    private LocalDate publicationDate;
+    @Column(name = "publication_year")
+    private Integer publicationYear;
 
-    private Integer rating; // 1 a 5
+    private Integer rating;
 
     private Boolean visible;
 
-    
     public Book() {
         // Constructor para JPA
     }
@@ -67,6 +73,22 @@ public class Book {
         this.isbn = isbn;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -75,12 +97,12 @@ public class Book {
         this.category = category;
     }
 
-    public LocalDate getPublicationDate() {
-        return publicationDate;
+    public Integer getPublicationYear() {
+        return publicationYear;
     }
 
-    public void setPublicationDate(LocalDate publicationDate) {
-        this.publicationDate = publicationDate;
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
     }
 
     public Integer getRating() {

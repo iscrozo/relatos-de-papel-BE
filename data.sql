@@ -391,6 +391,7 @@ INSERT INTO lista_deseo (id_usuario, id_libro, cantidad, precio, prioridad, nota
 
 -- ============================================
 -- TABLA: books (Microservicio ms-books-catalogue)
+-- Debe coincidir con la entidad Book (title, author, isbn, price, stock, category, publication_date, rating, visible)
 -- ============================================
 CREATE TABLE books (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -399,20 +400,23 @@ CREATE TABLE books (
     isbn VARCHAR(20) UNIQUE,
     price DECIMAL(10, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
+    category VARCHAR(100),
+    publication_date DATE,
+    rating INT,
+    visible TINYINT(1) DEFAULT 1,
     description TEXT,
     publisher VARCHAR(255),
     publication_year INT,
-    category VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO books (title, author, isbn, price, stock, description, publisher, publication_year, category) VALUES
-('Cien años de soledad', 'Gabriel García Márquez', '978-0307474728-EN', 29.99, 50, 'La obra maestra del realismo mágico.', 'Editorial Sudamericana', 1967, 'Ficción'),
-('Don Quijote de la Mancha', 'Miguel de Cervantes', '978-8424116378-EN', 35.50, 30, 'La primera novela moderna.', 'Real Academia Española', 1605, 'Clásicos'),
-('1984', 'George Orwell', '978-0451524935-EN', 24.99, 45, 'Novela distópica clásica.', 'Secker & Warburg', 1949, 'Distopía'),
-('El amor en los tiempos del cólera', 'Gabriel García Márquez', '978-0307389732-EN', 28.75, 25, 'Historia de amor épica.', 'Editorial Oveja Negra', 1985, 'Ficción'),
-('La sombra del viento', 'Carlos Ruiz Zafón', '978-8408163220-EN', 32.00, 40, 'Misterio en la Barcelona de posguerra.', 'Editorial Planeta', 2001, 'Misterio');
+INSERT INTO books (title, author, isbn, price, stock, category, publication_date, rating, visible, description, publisher, publication_year) VALUES
+('Cien años de soledad', 'Gabriel García Márquez', '978-0307474728-EN', 29.99, 50, 'Ficción', '1967-05-30', 5, 1, 'La obra maestra del realismo mágico.', 'Editorial Sudamericana', 1967),
+('Don Quijote de la Mancha', 'Miguel de Cervantes', '978-8424116378-EN', 35.50, 30, 'Clásicos', '1605-01-01', 5, 1, 'La primera novela moderna.', 'Real Academia Española', 1605),
+('1984', 'George Orwell', '978-0451524935-EN', 24.99, 45, 'Distopía', '1949-06-08', 5, 1, 'Novela distópica clásica.', 'Secker & Warburg', 1949),
+('El amor en los tiempos del cólera', 'Gabriel García Márquez', '978-0307389732-EN', 28.75, 25, 'Ficción', '1985-01-01', 5, 1, 'Historia de amor épica.', 'Editorial Oveja Negra', 1985),
+('La sombra del viento', 'Carlos Ruiz Zafón', '978-8408163220-EN', 32.00, 40, 'Misterio', '2001-01-01', 5, 1, 'Misterio en la Barcelona de posguerra.', 'Editorial Planeta', 2001);
 
 -- ============================================
 -- TABLA: payments (Microservicio ms-books-payments)

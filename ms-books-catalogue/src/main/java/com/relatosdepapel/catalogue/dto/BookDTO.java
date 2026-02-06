@@ -1,5 +1,6 @@
 package com.relatosdepapel.catalogue.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BookDTO {
@@ -8,6 +9,8 @@ public class BookDTO {
     private String title;
     private String author;
     private String isbn;
+    private BigDecimal price;
+    private Integer stock;
     private String category;
     private LocalDate publicationDate;
     private Integer rating;
@@ -47,6 +50,22 @@ public class BookDTO {
 
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
     public String getCategory() {
