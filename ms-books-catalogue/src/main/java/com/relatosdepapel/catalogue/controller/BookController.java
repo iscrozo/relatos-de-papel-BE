@@ -2,7 +2,9 @@ package com.relatosdepapel.catalogue.controller;
 
 import com.relatosdepapel.catalogue.dto.BookDTO;
 import com.relatosdepapel.catalogue.service.BookService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,5 +75,30 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateIsbn(DataIntegrityViolationException ex) {
+        return conflictOrBadRequest(ex.getMostSpecificCause().getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleOther(Exception ex) {
+        Throwable t = ex;
+        String msg = t.getMessage();
+        while (t.getCause() != null) {
+            t = t.getCause();
+            if (t.getMessage() != null) msg = t.getMessage();
+        }
+        return conflictOrBadRequest(msg);
+    }
+
+    private static ResponseEntity<Map<String, String>> conflictOrBadRequest(String msg) {
+        if (msg != null && msg.contains("Duplicate") && msg.contains("isbn")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "ISBN already exists", "message", "A book with this ISBN is already in the catalogue."));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Invalid data", "message", msg != null ? msg : "Constraint violation"));
     }
 }
