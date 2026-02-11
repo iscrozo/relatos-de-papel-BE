@@ -47,6 +47,10 @@ public class ProxyInversoGatewayFilter implements org.springframework.cloud.gate
     public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
         String path = exchange.getRequest().getPath().value();
 
+        if (HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())) {
+            return chain.filter(exchange);
+        }
+
         if (!PROXY_ACTION_PATHS.contains(path)) {
             return chain.filter(exchange);
         }

@@ -39,7 +39,14 @@ public class BookController {
         return service.findById(id);
     }
 
-    // Buscar libros con filtros
+    // Reindexar todos los libros en Elasticsearch (para pruebas o tras levantar ES)
+    @PostMapping("/reindex")
+    @ResponseStatus(HttpStatus.OK)
+    public void reindex() {
+        service.reindex();
+    }
+
+    // Buscar libros con filtros (usa Elasticsearch)
     @GetMapping("/search")
     public List<BookDTO> search(
             @RequestParam(required = false) String title,

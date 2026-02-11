@@ -10,9 +10,21 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      # CORS: permite consumir la API (incl. búsqueda Elasticsearch) desde el frontend
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ["http://localhost:5173", "http://127.0.0.1:5173"]
+            allowedOriginPatterns: ["http://localhost:*", "http://127.0.0.1:*"]
+            allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
       routes:
         # Ruta para el microservicio de Books Catalogue
-        # Proxy Inverso: POST /api/books/action with {"method":"GET","path":"/api/books/123"}
+        # Proxy Inverso: POST /api/books/action con body {"method":"GET","path":"/api/books/123"}
+        # Búsqueda Elasticsearch y reindex también vía /action: path="/api/books/search?title=..." o path="/api/books/reindex"
         - id: ms-books-catalogue
           uri: lb://ms-books-catalogue
           predicates:
