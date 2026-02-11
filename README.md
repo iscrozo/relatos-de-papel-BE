@@ -1,3 +1,11 @@
+## Grupo 8
+### * Valentina Amado
+### * Steven Victoria
+### * Harry Bernate
+### * Sebastián Rozo
+
+#### Link= https://github.com/iscrozo/relatos-de-papel-BE
+
 # Relatos de Papel - Microservices Base Configuration
 
 **Configuración base** de un sistema de microservicios para gestión de catálogo de libros y procesamiento de pagos, construido con Spring Boot 3.x y Spring Cloud.
