@@ -92,6 +92,7 @@ echo -e "${BLUE}Stopping services...${NC}"
 
 # Try stopping by PID files first
 stop_service "cloud-gateway"
+stop_service "ms-users"
 stop_service "books-payments"
 stop_service "books-catalogue"
 stop_service "eureka-server"
@@ -100,6 +101,7 @@ stop_service "eureka-server"
 echo ""
 echo -e "${BLUE}Checking for any remaining processes...${NC}"
 stop_by_port "Gateway" 8080
+stop_by_port "Users" 8083
 stop_by_port "Payments" 8082
 stop_by_port "Catalogue" 8081
 stop_by_port "Eureka" 8761
@@ -136,6 +138,13 @@ if lsof -ti:8082 > /dev/null 2>&1; then
     ALL_STOPPED=false
 else
     echo -e "${GREEN}✓ Port 8082 is free${NC}"
+fi
+
+if lsof -ti:8083 > /dev/null 2>&1; then
+    echo -e "${RED}✗ Port 8083 (Users) is still in use${NC}"
+    ALL_STOPPED=false
+else
+    echo -e "${GREEN}✓ Port 8083 is free${NC}"
 fi
 
 echo ""

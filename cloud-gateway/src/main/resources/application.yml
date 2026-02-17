@@ -64,6 +64,16 @@ spring:
           filters:
             - StripPrefix=0
 
+        # Ruta para el microservicio de Usuarios y Autenticación
+        - id: ms-users
+          uri: lb://ms-users
+          predicates:
+            - Path=/api/auth/**, /api/users/**
+          filters:
+            - StripPrefix=0
+        
+        # Ruta para el microservicio de Payments
+
 eureka:
   client:
     service-url:

@@ -7,6 +7,7 @@ COPY eureka-server/pom.xml eureka-server/
 COPY cloud-gateway/pom.xml cloud-gateway/
 COPY ms-books-catalogue/pom.xml ms-books-catalogue/
 COPY ms-books-payments/pom.xml ms-books-payments/
+COPY ms-users/pom.xml ms-users/
 RUN mvn -pl eureka-server dependency:go-offline -B -q
 
 COPY eureka-server eureka-server/

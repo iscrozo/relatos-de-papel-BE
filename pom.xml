@@ -25,6 +25,7 @@
         <module>cloud-gateway</module>
         <module>ms-books-catalogue</module>
         <module>ms-books-payments</module>
+        <module>ms-users</module>
     </modules>
 
     <properties>

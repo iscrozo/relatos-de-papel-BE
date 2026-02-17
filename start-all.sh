@@ -84,6 +84,7 @@ check_port 8761 || exit 1
 check_port 8080 || exit 1
 check_port 8081 || exit 1
 check_port 8082 || exit 1
+check_port 8083 || exit 1
 echo -e "${GREEN}✓ All ports are available${NC}"
 
 # Build all modules
@@ -134,6 +135,17 @@ echo $PAYMENTS_PID > "$PROJECT_ROOT/logs/books-payments.pid"
 wait_for_service "Payments Service" 8082
 sleep 5
 
+# Start Users Service
+echo -e "${YELLOW}Starting Users Service (Port 8083)...${NC}"
+cd "$PROJECT_ROOT/ms-users"
+nohup mvn spring-boot:run > "$PROJECT_ROOT/logs/ms-users.log" 2>&1 &
+USERS_PID=$!
+echo $USERS_PID > "$PROJECT_ROOT/logs/ms-users.pid"
+
+# Wait for registration
+wait_for_service "Users Service" 8083
+sleep 5
+
 # Start Gateway
 echo -e "${YELLOW}Starting Cloud Gateway (Port 8080)...${NC}"
 cd "$PROJECT_ROOT/cloud-gateway"
@@ -171,6 +183,13 @@ else
     echo -e "${GREEN}✓ Payments Service: UP${NC}"
 fi
 
+if ! curl -s http://localhost:8083/actuator/health | grep -q "UP"; then
+    echo -e "${RED}✗ Users Service is not healthy${NC}"
+    ALL_HEALTHY=false
+else
+    echo -e "${GREEN}✓ Users Service: UP${NC}"
+fi
+
 if ! curl -s http://localhost:8080/actuator/health | grep -q "UP"; then
     echo -e "${RED}✗ Cloud Gateway is not healthy${NC}"
     ALL_HEALTHY=false
@@ -191,8 +210,10 @@ if [ "$ALL_HEALTHY" = true ]; then
     echo -e "  • Gateway (API):      ${BLUE}http://localhost:8080${NC}"
     echo -e "  • Books API:          ${BLUE}http://localhost:8080/api/books${NC}"
     echo -e "  • Payments API:       ${BLUE}http://localhost:8080/api/payments${NC}"
+    echo -e "  • Auth API:           ${BLUE}http://localhost:8080/api/auth${NC}"
     echo -e "  • Books H2 Console:   ${BLUE}http://localhost:8081/h2-console${NC}"
     echo -e "  • Payments H2 Console:${BLUE}http://localhost:8082/h2-console${NC}"
+    echo -e "  • Users H2 Console:   ${BLUE}http://localhost:8083/h2-console${NC}"
     echo ""
     echo -e "${YELLOW}Logs directory:${NC} $PROJECT_ROOT/logs"
     echo -e "${YELLOW}To stop all services:${NC} ./stop-all.sh"
