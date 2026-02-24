@@ -1,7 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "ms-users/Dockerfile"
-dockerContextDir = "."
+dockerContextDir = ".."
 
 [deploy]
 healthcheckPath = "/actuator/health"
