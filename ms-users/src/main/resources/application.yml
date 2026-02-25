@@ -20,6 +20,15 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 eureka:
   client:
     service-url:
