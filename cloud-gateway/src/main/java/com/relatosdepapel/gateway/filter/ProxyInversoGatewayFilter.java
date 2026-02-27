@@ -35,9 +35,18 @@ import java.util.List;
 public class ProxyInversoGatewayFilter implements org.springframework.cloud.gateway.filter.GlobalFilter, Ordered {
 
     private static final Logger log = LoggerFactory.getLogger(ProxyInversoGatewayFilter.class);
+    private static final String PROXY_INVERSO_PROCESSED = "proxyInversoProcessed";
     private static final List<String> PROXY_ACTION_PATHS = Arrays.asList(
             "/api/books/action",
             "/api/payments/action"
+    );
+    private static final List<String> FORWARDING_HEADERS = Arrays.asList(
+            "X-Forwarded-For",
+            "X-Forwarded-Proto",
+            "X-Forwarded-Port",
+            "X-Forwarded-Host",
+            "X-Forwarded-Prefix",
+            "Forwarded"
     );
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -52,6 +61,11 @@ public class ProxyInversoGatewayFilter implements org.springframework.cloud.gate
         }
 
         if (!PROXY_ACTION_PATHS.contains(path)) {
+            return chain.filter(exchange);
+        }
+
+        Boolean alreadyProcessed = exchange.getAttribute(PROXY_INVERSO_PROCESSED);
+        if (Boolean.TRUE.equals(alreadyProcessed)) {
             return chain.filter(exchange);
         }
 
@@ -73,7 +87,10 @@ public class ProxyInversoGatewayFilter implements org.springframework.cloud.gate
                         HttpMethod httpMethod = HttpMethod.valueOf(parsed.getMethod().toUpperCase());
 
                         ServerHttpRequest newRequest = buildRequest(exchange.getRequest(), parsed, httpMethod);
-                        ServerWebExchange mutatedExchange = exchange.mutate().request(newRequest).build();
+                        ServerWebExchange mutatedExchange = exchange.mutate()
+                                .request(newRequest)
+                                .build();
+                        mutatedExchange.getAttributes().put(PROXY_INVERSO_PROCESSED, Boolean.TRUE);
 
                         log.debug("Proxy Inverso: {} {} -> {} {}", exchange.getRequest().getMethod(), path,
                                 httpMethod, parsed.getPath());
@@ -113,6 +130,9 @@ public class ProxyInversoGatewayFilter implements org.springframework.cloud.gate
             public HttpHeaders getHeaders() {
                 HttpHeaders headers = new HttpHeaders();
                 headers.addAll(original.getHeaders());
+                
+                FORWARDING_HEADERS.forEach(headers::remove);
+                
                 if (noBody) {
                     headers.remove(HttpHeaders.CONTENT_LENGTH);
                     headers.remove(HttpHeaders.CONTENT_TYPE);
