@@ -8,9 +8,8 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false  # ← Desactivar discovery automático por DNS
           lower-case-service-id: true
-      # CORS: permite consumir la API (incl. búsqueda Elasticsearch) desde el frontend
       globalcors:
         add-to-simple-url-handler-mapping: true
         cors-configurations:
@@ -29,50 +28,40 @@ spring:
             allowCredentials: true
             maxAge: 3600
       routes:
-        # Ruta para el microservicio de Books Catalogue
-        # Proxy Inverso: POST /api/books/action con body {"method":"GET","path":"/api/books/123"}
-        # Búsqueda Elasticsearch y reindex también vía /action: path="/api/books/search?title=..." o path="/api/books/reindex"
         - id: ms-books-catalogue
-          uri: lb://ms-books-catalogue
+          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}  # ← Variable de entorno
           predicates:
             - Path=/api/books/**
           filters:
             - StripPrefix=0
         
-        # Ruta para archivos/imágenes del catálogo
         - id: ms-books-catalogue-files
-          uri: lb://ms-books-catalogue
+          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
           predicates:
             - Path=/api/files/**
           filters:
             - StripPrefix=0
         
-        # Ruta para acceder a las imágenes estáticas (uploads)
         - id: ms-books-catalogue-uploads
-          uri: lb://ms-books-catalogue
+          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
           predicates:
             - Path=/uploads/**
           filters:
             - StripPrefix=0
         
-        # Ruta para el microservicio de Payments
-        # Proxy Inverso: POST /api/payments/action with {"method":"POST","path":"/api/payments","body":{...}}
         - id: ms-books-payments
-          uri: lb://ms-books-payments
+          uri: ${MS_BOOKS_PAYMENTS_URL:http://localhost:8082}
           predicates:
             - Path=/api/payments/**
           filters:
             - StripPrefix=0
 
-        # Ruta para el microservicio de Usuarios y Autenticación
         - id: ms-users
-          uri: lb://ms-users
+          uri: ${MS_USERS_URL:http://localhost:8083}
           predicates:
             - Path=/api/login, /api/register, /api/auth/**, /api/users/**
           filters:
             - StripPrefix=0
-        
-        # Ruta para el microservicio de Payments
 
 eureka:
   client:
