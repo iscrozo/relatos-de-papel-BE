@@ -6,12 +6,9 @@ spring:
     name: cloud-gateway
   cloud:
     gateway:
-      httpclient:
-        resolver:
-          prefer-native-env-dns: true
       discovery:
         locator:
-          enabled: false
+          enabled: true
           lower-case-service-id: true
       globalcors:
         add-to-simple-url-handler-mapping: true
@@ -32,35 +29,35 @@ spring:
             maxAge: 3600
       routes:
         - id: ms-books-catalogue
-          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
+          uri: lb://ms-books-catalogue
           predicates:
             - Path=/api/books/**
           filters:
             - StripPrefix=0
         
         - id: ms-books-catalogue-files
-          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
+          uri: lb://ms-books-catalogue
           predicates:
             - Path=/api/files/**
           filters:
             - StripPrefix=0
         
         - id: ms-books-catalogue-uploads
-          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
+          uri: lb://ms-books-catalogue
           predicates:
             - Path=/uploads/**
           filters:
             - StripPrefix=0
         
         - id: ms-books-payments
-          uri: ${MS_BOOKS_PAYMENTS_URL:http://localhost:8082}
+          uri: lb://ms-books-payments
           predicates:
             - Path=/api/payments/**
           filters:
             - StripPrefix=0
 
         - id: ms-users
-          uri: ${MS_USERS_URL:http://localhost:8083}
+          uri: lb://ms-users
           predicates:
             - Path=/api/login, /api/register, /api/auth/**, /api/users/**
           filters:
@@ -74,7 +71,7 @@ eureka:
     fetch-registry: true
   instance:
     hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
-    prefer-ip-address: false
+    prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port}
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
