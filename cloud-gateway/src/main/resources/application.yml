@@ -6,9 +6,12 @@ spring:
     name: cloud-gateway
   cloud:
     gateway:
+      httpclient:
+        resolver:
+          prefer-native-env-dns: true
       discovery:
         locator:
-          enabled: false  # ← Desactivar discovery automático por DNS
+          enabled: false
           lower-case-service-id: true
       globalcors:
         add-to-simple-url-handler-mapping: true
@@ -29,7 +32,7 @@ spring:
             maxAge: 3600
       routes:
         - id: ms-books-catalogue
-          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}  # ← Variable de entorno
+          uri: ${MS_BOOKS_CATALOGUE_URL:http://localhost:8081}
           predicates:
             - Path=/api/books/**
           filters:
